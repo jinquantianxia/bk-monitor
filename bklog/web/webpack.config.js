@@ -101,6 +101,16 @@ module.exports = (baseConfig, { app, mobile, production, fta, log, email = false
       static: [],
       proxy: [
         {
+          context: ['/api/v3'],
+          target: 'https://bkapi.bk-tenant-dev.woa.com/api/bk-user-web/prod', // window.BK_LOGIN_URL
+          changeOrigin: true,
+          secure: false,
+          headers: {
+            Cookie:
+              'x_host_key_access_https=f35b921e731a5b182aa948a55a431f67ceb721be_s; x-client-ssid=a410b00b:0198d0da9fd2:15e8c1; bklogin_csrftoken_5f61ccf9f45233f6=jiBA1LmWXzRdTtAp0XS3lSsr16A6ewEx; bklogin_sessionid_5f61ccf9f45233f6=0wi99t2g2j3by4kceawn34h3b7crx66m; bk_token=bkcrypt%24gAAAAABoq7aokbm9B-tlUpH1b9EZssasl5dQu_eF4QzIqOqxVI2uL4kX_Xa3NVkkDewmyMZSly4viO-F3SvSJwyMTn2_GpjdAZj5_tyeVsWRSYUyFFkcv_tfORaxW4dSm4V0SuWuLgvH; blueking_language=zh-cn; bklog_csrftoken=Mt5A2Q8zmf4yeIWW5oZbqSs6GY0LduWU; bk_log_search_sessionid=646vad8mllbrxgwbd7yh6ffid4qpth0q',
+          },
+        },
+        {
           ...devConfig.proxy,
         },
       ],
