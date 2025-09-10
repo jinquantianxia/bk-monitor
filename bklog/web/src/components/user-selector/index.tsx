@@ -23,11 +23,13 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import _ from 'lodash';
+
 import { computed, defineComponent, ref, watch } from 'vue';
-import BkUserSelector from '@blueking/bk-user-selector/vue2';
+
 import useLocale from '@/hooks/use-locale';
 import useStore from '@/hooks/use-store';
+import BkUserSelector from '@blueking/bk-user-selector/vue2';
+import _ from 'lodash';
 
 import './index.scss';
 
@@ -67,14 +69,13 @@ export default defineComponent({
     },
     onChange: { type: Function },
   },
-  emits: ['change', 'update'],
+  emits: ['change', 'update', 'blur', 'focus'],
 
   setup(props, { emit }) {
     const { t } = useLocale();
     const store = useStore();
 
     const localValue = ref<string[]>([]);
-    const isError = ref(false); // 是否显示错误状态
 
     const tenantId = computed(() => store.state.userMeta.bk_tenant_id);
 
@@ -96,21 +97,14 @@ export default defineComponent({
     const handleChange = (val: string[]) => {
       const realVal = val.filter(item => item !== undefined);
       localValue.value = realVal;
-      isError.value = !realVal.length;
       emit('change', realVal);
       emit('update', realVal);
-    };
-
-    // 失焦时校验
-    const handleBlur = () => {
-      isError.value = !props.value.length;
     };
 
     return () => (
       <div class='validate-user-selector'>
         <BkUserSelector
           style={props.customStyle}
-          class={isError.value ? 'is-error' : ''}
           api-base-url={apiBaseUrl}
           disabled={props.disabled}
           empty-text={t('无匹配人员')}
@@ -119,8 +113,9 @@ export default defineComponent({
           multiple={props.multiple}
           placeholder={props.placeholder}
           tenant-id={tenantId.value}
-          onBlur={handleBlur}
+          onBlur={() => emit('blur')}
           onChange={handleChange}
+          onFocus={() => emit('focus')}
         />
       </div>
     );

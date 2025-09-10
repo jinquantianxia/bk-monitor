@@ -1,9 +1,36 @@
-import { defineComponent, ref, computed, onMounted } from 'vue';
-import useStore from '@/hooks/use-store';
-import useRouter from '@/hooks/use-router';
-import useLocale from '@/hooks/use-locale';
-import http from '@/api';
+/*
+* Tencent is pleased to support the open source community by making
+* 蓝鲸智云PaaS平台 (BlueKing PaaS) available.
+*
+* Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+*
+* 蓝鲸智云PaaS平台 (BlueKing PaaS) is licensed under the MIT License.
+*
+* License for 蓝鲸智云PaaS平台 (BlueKing PaaS):
+*
+* ---------------------------------------------------
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+* documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+* the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
+* to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of
+* the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+* THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+* CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+* IN THE SOFTWARE.
+*/
+import { computed, defineComponent, onMounted, ref } from 'vue';
+
 import ValidateUserSelector from '@/components/user-selector';
+import useLocale from '@/hooks/use-locale';
+import useRouter from '@/hooks/use-router';
+import useStore from '@/hooks/use-store';
+
+import http from '@/api';
 
 import './link-create.scss';
 
@@ -19,7 +46,6 @@ export default defineComponent({
     const basicLoading = ref(false); // 基础信息loading
     const submitLoading = ref(false); // 提交按钮loading
     const isSubmit = ref(false); // 是否已提交
-    const userApi = (window as any).BK_LOGIN_URL; // 用户选择器API
     const isAdminError = ref(false); // 人员是否为空
     const cacheOperator = ref<any[]>([]); // 缓存的人员
     const isDisableCommon = ref(false); // 是否禁用内网链路
@@ -229,9 +255,11 @@ export default defineComponent({
               required
             >
               <bk-input
-                value={formData.value.name}
-                onChange={val => (formData.value.name = val)}
                 data-test-id='basicInformation_input_linkName'
+                value={formData.value.name}
+                onChange={val => {
+                  formData.value.name = val;
+                }}
               />
             </bk-form-item>
 
@@ -242,10 +270,12 @@ export default defineComponent({
               required
             >
               <bk-select
-                value={formData.value.link_type}
-                onChange={val => (formData.value.link_type = val)}
                 clearable={false}
                 data-test-id='basicInformation_select_selectLinkType'
+                value={formData.value.link_type}
+                onChange={val => {
+                  formData.value.link_type = val;
+                }}
               >
                 {(!isK8sDeploy.value || isShowCommon.value) && (
                   <bk-option
@@ -289,9 +319,11 @@ export default defineComponent({
               required
             >
               <bk-input
-                value={formData.value.op_bk_biz_id}
-                onChange={val => (formData.value.op_bk_biz_id = val)}
                 data-test-id='basicInformation_input_executivebk_biz_id'
+                value={formData.value.op_bk_biz_id}
+                onChange={val => {
+                  formData.value.op_bk_biz_id = val;
+                }}
               />
             </bk-form-item>
 
@@ -303,9 +335,11 @@ export default defineComponent({
                 required
               >
                 <bk-input
-                  value={formData.value.qcloud_secret_id}
-                  onChange={val => (formData.value.qcloud_secret_id = val)}
                   data-test-id='basicInformation_input_SecretId'
+                  value={formData.value.qcloud_secret_id}
+                  onChange={val => {
+                    formData.value.qcloud_secret_id = val;
+                  }}
                 />
               </bk-form-item>,
               <bk-form-item
@@ -314,10 +348,12 @@ export default defineComponent({
                 required
               >
                 <bk-input
-                  value={formData.value.qcloud_secret_key}
-                  onChange={val => (formData.value.qcloud_secret_key = val)}
                   data-test-id='basicInformation_input_SecretKey'
                   type='password'
+                  value={formData.value.qcloud_secret_key}
+                  onChange={val => {
+                    formData.value.qcloud_secret_key = val;
+                  }}
                 />
               </bk-form-item>,
               <bk-form-item
@@ -326,9 +362,11 @@ export default defineComponent({
                 required
               >
                 <bk-input
-                  value={formData.value.qcloud_cos_bucket}
-                  onChange={val => (formData.value.qcloud_cos_bucket = val)}
                   data-test-id='basicInformation_input_cosBucket'
+                  value={formData.value.qcloud_cos_bucket}
+                  onChange={val => {
+                    formData.value.qcloud_cos_bucket = val;
+                  }}
                 />
               </bk-form-item>,
               <bk-form-item
@@ -337,24 +375,28 @@ export default defineComponent({
                 required
               >
                 <bk-input
-                  value={formData.value.qcloud_cos_region}
-                  onChange={val => (formData.value.qcloud_cos_region = val)}
                   data-test-id='basicInformation_input_cosRegion'
+                  value={formData.value.qcloud_cos_region}
+                  onChange={val => {
+                    formData.value.qcloud_cos_region = val;
+                  }}
                 />
               </bk-form-item>,
             ]}
 
             {/* 是否启用 */}
             <bk-form-item
+              class='is-enable-group'
               label={t('是否启用')}
               property='is_enable'
               required
-              class='is-enable-group'
             >
               <bk-radio-group
-                value={formData.value.is_enable}
-                onChange={val => (formData.value.is_enable = val)}
                 data-test-id='basicInformation_radio_whetherToEnable'
+                value={formData.value.is_enable}
+                onChange={val => {
+                  formData.value.is_enable = val;
+                }}
               >
                 <bk-radio
                   style='margin-right: 16px'
@@ -413,31 +455,31 @@ export default defineComponent({
                 {/* 列表内容 */}
                 {formData.value.hosts.map((item: any, index: number) => (
                   <li
-                    class='host-item'
                     key={item.keyId}
+                    class='host-item'
                   >
                     <div class='min-box dir-container'>
                       <bk-input
                         class='king-input'
                         value={item.target_dir}
-                        onChange={val => (item.target_dir = val)}
                         onBlur={(e: any) => handleInputBlur(item.target_dir, e)}
+                        onChange={val => (item.target_dir = val)}
                       />
                     </div>
                     <div class='min-box id-container'>
                       <bk-input
                         class='king-input'
                         value={item.bk_cloud_id}
-                        onChange={val => (item.bk_cloud_id = val)}
                         onBlur={(e: any) => handleInputBlur(item.bk_cloud_id, e)}
+                        onChange={val => (item.bk_cloud_id = val)}
                       />
                     </div>
                     <div class='min-box ip-container'>
                       <bk-input
                         class='king-input'
                         value={item.ip}
-                        onChange={val => (item.ip = val)}
                         onBlur={(e: any) => handleInputBlur(item.ip, e)}
+                        onChange={val => (item.ip = val)}
                       />
                     </div>
                     <div class='min-box operation-container'>
@@ -469,8 +511,8 @@ export default defineComponent({
         {/* 提交按钮 */}
         <bk-button
           style='width: 86px'
-          loading={submitLoading.value}
           data-test-id='basicInformation_button_submitFrom'
+          loading={submitLoading.value}
           theme='primary'
           onClick={submitForm}
         >

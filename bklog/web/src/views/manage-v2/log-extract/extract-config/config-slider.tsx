@@ -24,7 +24,7 @@
  * IN THE SOFTWARE.
  */
 
-import { defineComponent, ref, computed, watch, nextTick } from 'vue';
+import { defineComponent, nextTick, ref } from 'vue';
 
 import ValidateUserSelector from '@/components/user-selector';
 import useLocale from '@/hooks/use-locale';
@@ -79,7 +79,7 @@ export default defineComponent({
     const isChangeOperatorLoading = ref(false); // 修改执行人加载状态
     const showSelectDialog = ref(false); // 是否显示选择对话框
     const manageStrategyData = ref(structuredClone(props.strategyData)); // 管理策略数据
-    const isError = ref(false);
+    // const isError = ref(false);
 
     // 初始化数据，避免后台造的数据为空数组
     if (!manageStrategyData.value.visible_dir?.length) {
@@ -102,7 +102,7 @@ export default defineComponent({
       console.log('isValidated = ', manageStrategyData.value);
     };
 
-    const isExternal = computed(() => store.state.isExternal);
+    // const isExternal = computed(() => store.state.isExternal);
 
     // 校验授权目录
     const validateVisibleDir = (val: string) => {
@@ -110,7 +110,7 @@ export default defineComponent({
       // 不得出现 ./
       // 必须以 / 开头
       // 必须以 / 结尾
-      return !/[^\w\-\.\/]/.test(val) && !/\.\//.test(val) && val.startsWith('/') && val.endsWith('/');
+      return !/[^\w\-./]/.test(val) && !/\.\//.test(val) && val.startsWith('/') && val.endsWith('/');
     };
 
     // 校验文件后缀
@@ -243,15 +243,15 @@ export default defineComponent({
       ));
     };
 
-    const handleBlur = () => {
-      isError.value = !manageStrategyData.value.user_list.length;
-    };
+    // const handleBlur = () => {
+    //   isError.value = !manageStrategyData.value.user_list.length;
+    // };
 
-    const handleChangePrincipal = val => {
-      isError.value = !val.length;
-      manageStrategyData.value.user_list = val;
-      isValidatedComputed();
-    };
+    // const handleChangePrincipal = val => {
+    //   isError.value = !val.length;
+    //   manageStrategyData.value.user_list = val;
+    //   isValidatedComputed();
+    // };
 
     // 主渲染函数
     return () => (
@@ -300,7 +300,7 @@ export default defineComponent({
             <div class='content'>
               <ValidateUserSelector
                 value={manageStrategyData.value.user_list}
-                onChange={(val: any[]) => {
+                onChange={(val: string[]) => {
                   manageStrategyData.value.user_list = val;
                   isValidatedComputed();
                 }}

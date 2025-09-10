@@ -24,13 +24,15 @@
  * IN THE SOFTWARE.
  */
 
-import { defineComponent, ref, reactive, computed, watch, onMounted } from 'vue';
-import useStore from '@/hooks/use-store';
-import useLocale from '@/hooks/use-locale';
-import http from '@/api';
+import { computed, defineComponent, onMounted, reactive, ref, watch } from 'vue';
+
 import * as authorityMap from '@/common/authority-map';
-import { InfoBox, Message } from 'bk-magic-vue';
 import ValidateUserSelector from '@/components/user-selector';
+import useLocale from '@/hooks/use-locale';
+import useStore from '@/hooks/use-store';
+import { InfoBox, Message } from 'bk-magic-vue';
+
+import http from '@/api';
 
 import './restore-slider.scss';
 
@@ -228,9 +230,9 @@ export default defineComponent({
     const renderArchiveOptions = () => {
       return archiveList.value.map(option => (
         <bk-option
-          disabled={!option.permission[authorityMapComputed.value.MANAGE_COLLECTION_AUTH]}
           id={option.archive_config_id}
           key={option.archive_config_id}
+          disabled={!option.permission[authorityMapComputed.value.MANAGE_COLLECTION_AUTH]}
           name={option.instance_name}
         >
           {option.instance_name}
@@ -344,9 +346,9 @@ export default defineComponent({
                 <bk-form
                   ref={validateForm}
                   class='king-form'
-                  label-width={150}
                   data-test-id='restore_div_addNewRestore'
                   form-type='vertical'
+                  label-width={150}
                   {...{
                     props: {
                       model: formData,
@@ -361,9 +363,9 @@ export default defineComponent({
                     required
                   >
                     <bk-input
-                      value={formData.index_set_name}
-                      disabled={isEdit.value}
                       data-test-id='addNewRestore_input_indexSetName'
+                      disabled={isEdit.value}
+                      value={formData.index_set_name}
                       onChange={(val: string) => (formData.index_set_name = val)}
                     />
                   </bk-form-item>
@@ -375,9 +377,9 @@ export default defineComponent({
                     required
                   >
                     <bk-select
-                      value={formData.archive_config_id}
-                      disabled={isEdit.value}
                       data-test-id='addNewRestore_select_selectCollector'
+                      disabled={isEdit.value}
+                      value={formData.archive_config_id}
                       onChange={(val: any) => {
                         formData.archive_config_id = val;
                         handleArchiveChange(val);
@@ -394,11 +396,11 @@ export default defineComponent({
                     required
                   >
                     <bk-date-picker
-                      value={formData.datePickerValue}
                       disabled={isEdit.value}
+                      format='yyyy-MM-dd HH:mm'
                       placeholder={t('选择日期时间范围')}
                       type='datetimerange'
-                      format='yyyy-MM-dd HH:mm'
+                      value={formData.datePickerValue}
                       onChange={val => {
                         formData.datePickerValue = val;
                         handleTimeChange(val);
@@ -413,10 +415,10 @@ export default defineComponent({
                     required
                   >
                     <bk-date-picker
-                      value={formData.datePickerExpired}
-                      options={expiredDatePicker}
                       data-test-id='addNewRestore_div_datePickerExpired'
                       format='yyyy-MM-dd HH:mm'
+                      options={expiredDatePicker}
+                      value={formData.datePickerExpired}
                       onChange={val => {
                         formData.datePickerExpired = val;
                         handleExpiredChange(val);
@@ -432,10 +434,12 @@ export default defineComponent({
                   >
                     <ValidateUserSelector
                       customStyle='width: 500px'
-                      value={formData.notice_user}
-                      onChange={(val: string[]) => (formData.notice_user = val)}
-                      disabled={isEdit.value}
                       data-test-id='addNewRestore_input_notifiedUser'
+                      disabled={isEdit.value}
+                      value={formData.notice_user}
+                      onChange={(val: string[]) => {
+                        formData.notice_user = val;
+                      }}
                     />
                   </bk-form-item>
 
@@ -443,8 +447,8 @@ export default defineComponent({
                   <bk-form-item style='margin-top: 30px'>
                     <bk-button
                       class='king-button mr10'
-                      loading={confirmLoading.value}
                       data-test-id='addNewRestore_button_submit'
+                      loading={confirmLoading.value}
                       theme='primary'
                       onClick={handleConfirm}
                     >

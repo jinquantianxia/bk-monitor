@@ -117,7 +117,7 @@
               property="notice_user"
               required
             >
-              <validate-user-selector
+              <ValidateUserSelector
                 style="width: 500px"
                 v-model="formData.notice_user"
                 :api="userApi"
@@ -149,8 +149,8 @@
 </template>
 
 <script>
-  import SidebarDiffMixin from '@/mixins/sidebar-diff-mixin';
   import { mapGetters } from 'vuex';
+  import SidebarDiffMixin from '@/mixins/sidebar-diff-mixin';
 
   import * as authorityMap from '../../../../common/authority-map';
   import ValidateUserSelector from '../../manage-extract/manage-extract-permission/validate-user-selector';
