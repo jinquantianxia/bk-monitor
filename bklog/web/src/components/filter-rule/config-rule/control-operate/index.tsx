@@ -123,6 +123,7 @@ export default defineComponent({
             class='save-btn'
             disabled={props.confirmEnable}
             theme='primary'
+            data-test-id='configRuleConfirmButton'
             on-click={handelClickConfirm}
           >
             {t('确定')} {getOsCommandLabel()} + Enter

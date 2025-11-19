@@ -377,6 +377,7 @@ export default defineComponent({
                   >
                     <div class='setting-item'>
                       <bk-select
+                        data-test-id='conditionSelect'
                         style='width: 314px'
                         clearable={false}
                         value={formData.value.op}
@@ -386,6 +387,7 @@ export default defineComponent({
                       >
                         {conditionList.map(option => (
                           <bk-option
+                            data-test-id='conditionOption'
                             id={option.id}
                             key={option.id}
                             name={option.name}
@@ -401,6 +403,7 @@ export default defineComponent({
                   >
                     <div class='content-input-wraper'>
                       <bk-tag-input
+                        data-test-id='valueTagInput'
                         clearable={false}
                         content-width={232}
                         placeholder={t('请输入')}
@@ -443,7 +446,8 @@ export default defineComponent({
                 </bk-form>
               </div>
             </div>
-            <control-operate
+            <ControlOperate
+              data-test-id='controlOperate'
               ref={controlOperateRef}
               confrim-enable={isConfirmEnable.value}
               on-cancel={handleClickCancel}

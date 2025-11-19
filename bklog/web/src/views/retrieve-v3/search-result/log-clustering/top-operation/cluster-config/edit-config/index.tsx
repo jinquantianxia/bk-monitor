@@ -335,7 +335,7 @@ export default defineComponent({
               </bk-form-item>
               <div style='margin-bottom: 40px'>
                 <p style='height: 24px; font-size: 12px'>{t('过滤规则')}</p>
-                <filter-rule
+                <FilterRule
                   ref={filterRuleRef}
                   data={formData.value.filter_rules}
                 />

@@ -137,6 +137,7 @@ export default defineComponent({
         {filterRules.value.map((item, index) => (
           <div
             key={`${item.field_name}_${index}`}
+            data-test-id='filterRuleItem'
             class='filter-rule-item'
           >
             {filterRules.value.length && index > 0 && (
@@ -158,7 +159,7 @@ export default defineComponent({
                 ))}
               </bk-select>
             )}
-            <config-rule
+            <ConfigRule
               ref={setConfigRulesRef(index)}
               data={item}
               is-create={false}
@@ -168,7 +169,7 @@ export default defineComponent({
             />
           </div>
         ))}
-        <config-rule
+        <ConfigRule
           ref={addConfigRuleRef}
           on-click-trigger={() => handleClickTrigger(-1)}
           on-confirm={handleConfirmConfig}

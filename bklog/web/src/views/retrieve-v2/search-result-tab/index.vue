@@ -161,6 +161,7 @@ onMounted(() => {
       <span
         v-for="(item, index) in renderPanelList"
         :key="item.label"
+        data-test-id="retrieve-tab-item"
         :class="['retrieve-panel', { active: value === item.name }, ...tabClassList[index]]"
         @click="handleActive(item.name)"
       >{{ item.label }}</span>

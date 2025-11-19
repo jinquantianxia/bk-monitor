@@ -66,6 +66,7 @@ export default defineComponent({
     return () => (
       <div
         class='cluster-config-operate-main'
+        data-test-id='clusterConfigMain'
         on-click={handleShowEditConfig}
       >
         <log-icon

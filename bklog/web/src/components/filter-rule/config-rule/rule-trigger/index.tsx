@@ -75,7 +75,7 @@ export default defineComponent({
         on-click={handleClickTrigger}
       >
         {props.isCreate ? (
-          <div class='add-main'>
+          <div class='add-main' data-test-id='addRuleTrigger'>
             <log-icon type='plus' />
           </div>
         ) : (
