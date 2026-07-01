@@ -85,6 +85,13 @@ export default defineComponent({
     /** 当前选中对象的唯一标识 */
     const currentTargetUniqueId = computed(() => getTargetUniqueId(props.currentTarget));
 
+    /** 当前选中对象的文本 */
+    const selectTargetText = computed(() => {
+      if (!props.currentTarget) return window.i18n.t('请选择');
+      const { namespace = '', workload = '', pod = '' } = props.currentTarget || {};
+      return `[${namespace}] ${workload || pod}`;
+    });
+
     /**
      * @method getTargetUniqueId
      * @description 基于目标对象所有属性值生成唯一标识
@@ -109,12 +116,14 @@ export default defineComponent({
 
     return {
       displayKey,
+      selectTargetText,
       targetSelectorData,
       currentTargetUniqueId,
       handleSelected,
     };
   },
   render() {
+    console.log('this.targetSelectorData = ', this.targetSelectorData);
     return (
       <div class='k8s-target-selector'>
         <Select
@@ -130,11 +139,16 @@ export default defineComponent({
             trigger: () => (
               <div class='k8s-target-selector-trigger-container'>
                 <div class='trigger-main'>
-                  <span class='selected-text'>{this.currentTarget?.[this.displayKey] ?? '--'}</span>
+                  <span class='selected-text'>{this.selectTargetText}</span>
                 </div>
                 <div class='trigger-suffix'>
                   <i class='icon-monitor icon-arrow-down' />
                 </div>
+              </div>
+            ),
+            optionRender: ({ item }) => (
+              <div class='k8s-target-selector-item'>
+                <span class='item-display-name'>{`[${item.namespace}] ${item.workload || item.pod}（集群: ${item.bcs_cluster_id}）`}</span>
               </div>
             ),
           }}
