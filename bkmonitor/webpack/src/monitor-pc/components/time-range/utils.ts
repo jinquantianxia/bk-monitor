@@ -57,10 +57,19 @@ export class TimeRange {
   }
 }
 
-/** 字符串的时间戳(毫秒)转为数字类型 */
-export const intTimestampStr = (str): null | number => {
-  const isTimestamp = /^\d{1}$|^([1-9]\d{1,12})$/.test(str);
-  return isTimestamp ? Number.parseInt(str, 10) : str;
+/**
+ * @description 将字符串形式的时间戳归一化为毫秒数字
+ * 兼容 秒(10位)/毫秒(13位)/微秒(16位)/纳秒(19位) 精度，避免高精度时间戳（如 OTel 微秒级）被误判为非时间戳；
+ * 非纯数字字符串（如相对时间 now-1h 或格式化时间 YYYY-MM-DD HH:mm:ssZZ）原样返回
+ */
+export const intTimestampStr = (str: number | string): number | string => {
+  if (typeof str !== 'string' || !/^\d+$/.test(str)) return str;
+  const num = Number(str);
+  const len = str.length;
+  if (len <= 10) return num * 1000; // 秒 → 毫秒
+  if (len <= 13) return num; // 毫秒
+  if (len <= 16) return Math.floor(num / 1000); // 微秒 → 毫秒
+  return Math.floor(num / 1e6); // 纳秒及更高精度 → 毫秒
 };
 
 /** 将格式为 ['now-1d', 'now'] 转换为 ['YYYY-MM-DD HH:mm:ssZZ', 'YYYY-MM-DD HH:mm:ssZZ'] */
