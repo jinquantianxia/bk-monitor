@@ -110,7 +110,8 @@
               </div>
             </template>
             <div class="add-group-btn">
-              <i class="bk-icon icon-plus-line" />
+              <i v-if="!isAPM" class="bk-icon icon-plus-line" />
+              <i v-else class="icon-monitor icon-plus-line" />
             </div>
           </bk-popover>
 
@@ -288,6 +289,7 @@ const props = defineProps({
 const emit = defineEmits(["close"]);
 const store = useStore();
 const { $t } = useLocale();
+
 const spaceUid = computed(() => store.state.spaceUid);
 const groups = computed(() => {
   return localFavoriteList.value.map((item) => ({
@@ -346,6 +348,7 @@ const favoriteTableRef = ref(null);
 const editFavoriteNameInputRef = ref(null);
 const editFavoriteNameSelectRef = ref(null);
 
+const isAPM = window.__IS_MONITOR_APM__;
 const rules = {
   name: [
     { validator: () => /^[\u4e00-\u9fa5\w\s\-\+]+$/.test(addGroupData.value.name), message: $t("组名不规范"), trigger: "blur" },
@@ -368,7 +371,7 @@ watch(() => [props.modelValue], () => {
 
 watch(
   allGroupList,
-  (newValue, oldValue) => {
+  (newValue) => {
     const groupMap = new Map(
       otherGroupList.value.map((group) => {
         return [group.id, { ...group, favorites: [] }];
@@ -391,7 +394,6 @@ watch(
       },
       [[], [], initialOtherGroups]
     );
-
     noGroupList.value = noGroupItems;
     privateFavorite.value = privateItems;
     otherGroupList.value = otherGroupItems;
@@ -411,12 +413,19 @@ const handleShowChange = () => {
 /** 获取组列表 */
 const getGroupList = async () => {
   try {
-    const res = await $http.request("favorite/getGroupList", {
-      query: {
-        space_uid: spaceUid.value,
-        source_type: store.getters.isSceneMode ? 'scene' : 'index_set',
-      },
-    });
+    const query = {
+      space_uid: spaceUid.value,
+      source_type: store.getters.isSceneMode ? 'scene' : 'index_set',
+    };
+    if (window.__IS_MONITOR_APM__) {
+      Object.assign(query, {
+        scope: JSON.stringify({
+          app_name: window.MONITOR_APM_APP_NAME,
+          service_name: window.MONITOR_APM_SERVICE_NAME,
+        }),
+      });
+    }
+    const res = await $http.request("favorite/getGroupList", { query });
     otherGroupList.value = res.data
       .filter((item) => item.name !== "未分组" && item.name !== "个人收藏")
       .map((item) => {
@@ -439,20 +448,27 @@ const { formatResponseListTimeZoneString } = useUtils();
 const getFavoriteList = async () => {
   try {
     // this.tableLoading = true;
-    const res = await $http.request("favorite/getFavoriteList", {
-      query: {
-        space_uid: spaceUid.value,
-        order_type: "NAME_ASC",
-        source_type: store.getters.isSceneMode ? 'scene' : 'index_set',
-      },
-    });
+    const query = {
+      space_uid: spaceUid.value,
+      order_type: "NAME_ASC",
+      source_type: store.getters.isSceneMode ? 'scene' : 'index_set',
+    };
+    if (window.__IS_MONITOR_APM__) {
+      Object.assign(query, {
+        scope: JSON.stringify({
+          app_name: window.MONITOR_APM_APP_NAME,
+          service_name: window.MONITOR_APM_SERVICE_NAME,
+        }),
+      });
+    }
+    const res = await $http.request("favorite/getFavoriteList", { query });
+    console.log('res.data = ', res.data);
     const data = formatResponseListTimeZoneString(res.data, () => {
       return {
         editName: false,
         editGroup: false,
       };
     });
-
     allGroupList.value = data;
 
     searchResultFavorites.value = allGroupList.value;
@@ -531,11 +547,21 @@ const handleTableSelectionChange = (selection) => {
 const handleAddGroupConfirm = async () => {
   try {
     await checkInputFormRef.value.validate();
-    const data = { name: addGroupData.value.name, space_uid: spaceUid.value, source_type: store.getters.isSceneMode ? 'scene' : 'index_set' };
+    const data = {
+      name: addGroupData.value.name,
+      space_uid: spaceUid.value,
+      source_type: store.getters.isSceneMode ? 'scene' : 'index_set'
+    };
+    if (window.__IS_MONITOR_APM__) {
+      Object.assign(data, {
+        scope: {
+          app_name: window.MONITOR_APM_APP_NAME,
+          service_name: window.MONITOR_APM_SERVICE_NAME,
+        },
+      });
+    }
     await $http
-      .request(`favorite/createGroup`, {
-        data,
-      })
+      .request(`favorite/createGroup`, { data });
 
     handleAddGroupPopoverHidden();
     initData();
@@ -628,13 +654,17 @@ const handleUpdateFavorite = async (row) => {
       search_mode: row.search_mode,
     },
   ];
+  if (window.__IS_MONITOR_APM__) {
+    Object.assign(params, {
+      scope: {
+        app_name: window.MONITOR_APM_APP_NAME,
+        service_name: window.MONITOR_APM_SERVICE_NAME,
+      },
+    });
+  }
 
   return $http
-    .request("favorite/batchFavoriteUpdate", {
-      data: {
-        params,
-      },
-    })
+    .request("favorite/batchFavoriteUpdate", { data: { params } })
     .then(() => {
       return Promise.resolve(true);
     })
